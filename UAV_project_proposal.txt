@@ -1,0 +1,50 @@
+ UAV Package Delivery Model for Denver County
+
+Amazon, Google, and UPS continue to investigate unmanned aerial vehicles (UAVs)
+for home package delivery. NASA and the FAA are attempting to develop the
+technological and regulatory infrastructure needed for UAVs in many
+industries, including package delivery. However, decisions are being made by
+both agencies that would affect delivery service without a public model to
+evaluate the effects of their decisions. For instance, should heliports at
+hospitals, police departments, and news agencies continue to require 5 mile
+radius no-fly zones? Should schools, government buildings, major shopping
+areas and parks also be protected by no-fly zones, and if so how large? How
+should flying over roads and highways be managed? And for delivery services and
+potential customers, how will package delivery time and UAV requirements be
+affected by these decisions?
+
+
+The first part of the project will seek to answer these questions by creating
+package delivery models for Denver County. At the minimum two models will be
+constructed: a lightly constrained model that considers only a few no-fly zones
+(such as flying around skyscrapers) where "as the crow flies" routes are more
+the norm, and a constrained model where many locations are protected by no-fly
+zones, flight paths are largely nonlinear and aerial "highways" likely emerge
+as the safest routes for package delivery to most locations. Package
+delivery time and UAV requirements will be compared between simulations.
+Analysis will consist of routing problems solved via graph theory using data
+aggregated from the US. Census, the DenverOpenData catalog, Wikipedia, and
+Google Maps via the JavaScript API. Results will be visualized on Google Maps
+and, if time allows, D3.
+
+
+The second part of the project addresses the final step of delivery: package
+drop-off at the customer's home. In Amazon's conception of this step, the
+customer places a 1'x1' sign with the Amazon logo flat on the ground near their
+home where they want the UAV to land. As the UAV nears the home it switches
+from GPS navigation to an on-board camera that looks for the sign and positions
+itself over it to land. This is too restrictive. Based on conversations with
+Dr. Winkler at DigitalGlobe, it should be possible to classify and rank
+potential landing zones around a home using high resolution multispectral
+images from DigitalGlobe's WorldView satellites. These landing zones could serve
+as default landing locations that would not require the customer's presence for
+deliveries. This portion of the project aims to demonstrate proof-of-concept
+for a manageable area and number of images, say a city block in the Curtis
+neighborhood. Analysis will consist of training and testing a random forest
+classifier on WorldView images.
+
+
+In summary, this project will result in a graphical model that will help experts
+and legislators understand the impact of their policy decisions on the potential
+UAV delivery network, and a classifier model that will demonstrate to some
+confidence that customer-not-at-home delivery is possible
