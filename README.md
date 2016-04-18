@@ -8,17 +8,16 @@ both agencies that would affect delivery service without a public model to
 evaluate the effects of their decisions. For instance, should heliports at
 hospitals, police departments, and news agencies continue to require 5 mile
 radius no-fly zones? Should schools, government buildings, major shopping
-areas and parks also be protected by no-fly zones, and if so how large? How
-should flying over roads and highways be managed? And for delivery services and
-potential customers, how will package delivery time and UAV requirements be
-affected by these decisions?
+areas and parks also be protected by no-fly zones, and if so how large? And
+for delivery services and potential customers, how will package delivery time
+and UAV requirements be affected by these decisions?
 
 The first part of the project answers these questions by creating
 package delivery models for Denver County. "As the crow flies" routes are compared
 to more constrained routes that include no-fly zones for many locations.
 Routing problems solved via graph theory using data aggregated from the US. Census,
-the DenverOpenData catalog, Wikipedia, and Google Maps via the JavaScript API. 
-Results are visualized on Google Maps and in matplotlib.
+the DenverOpenData catalog, Google Maps via the JavaScript API. Results are 
+visualized on Google Maps and in matplotlib.
 
 The second part of the project addresses the final step of delivery: package
 drop-off at the customer's home. In Amazon's conception of this step, the
