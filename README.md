@@ -16,7 +16,7 @@ The first part of the project answers these questions by creating
 package delivery models for Denver County. "As the crow flies" routes are compared
 to more constrained routes that include no-fly zones for many locations.
 Routing problems solved via graph theory using data aggregated from the US. Census,
-the DenverOpenData catalog, Google Maps via the JavaScript API. Results are 
+the DenverOpenData catalog, and Google Maps via the JavaScript API. Results are 
 visualized on Google Maps and in matplotlib.
 
 The second part of the project addresses the final step of delivery: package
