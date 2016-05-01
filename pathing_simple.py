@@ -1,9 +1,13 @@
+'''
+Code demonstrates finding obstructing circle between two points and navigating 
+around it with the shortest path.  Finds the shortest path.
+'''
+
 import matplotlib.pyplot as plt
-from math import sqrt, cos, sin, acos, asin
+from math import sqrt, cos, sin, acos, asin, floor
 
-
-def make_plots(p1, p2, c, plist, xytps1, xytps2):
-    ''' make some plots in case there was an intersection '''
+def make_plots(p1, p2, c, plist, xytps1, xytps2, plist2):
+    ''' make plots in case there was an intersection '''
     plot_pts(plist)
     plot_line(plist, 'k', '--')
     plot_tan_pts(p1, xytps1)
@@ -13,41 +17,38 @@ def make_plots(p1, p2, c, plist, xytps1, xytps2):
     plt.ylabel('y')
     plt.axes().set_aspect('equal')
     plt.grid()
+    plt.title('Possible paths')
     plt.show()
     plot_pts(plist)
-    plot_line([p1, tp1], 'r', '-')
-    plot_line([p2, tp2], 'r', '-')
+    plot_line(plist, 'k', '--')
+    plot_line(plist2, 'r', '-')
     plot_circle(c)
     plt.axes().set_aspect('equal')
     plt.grid()
     plt.xlabel('x')
     plt.ylabel('y')
+    plt.title('Shortest path')
     plt.show()
 
 def plot_path(plist, c1ist):
     ''' plots the path of pts in plist around the circles in clist '''
-   
     x, y = [p[0] for p in plist], [p[1] for p in plist] # points
     circles = [plt.Circle(c[:2],c[2], color='b') for c in clist] # circles
-    
     # plotting
-    plt.plot(x, y, 'ko-')
+    plt.plot(x, y, 'ko--')
     plt.axes().set_aspect('equal')
     plt.xlabel('x'); plt.ylabel('y')
     plt.grid()
+    plt.title('Ideal path - close window for next figure.')
     plt.show() 
-    plt.plot(x, y, 'ko-')
+    plt.plot(x, y, 'ko--')
     fig = plt.gcf()
     for circle in circles:
        fig.gca().add_artist(circle)      
-    # max_x, max_y, min_x, min_y = max(x), max(y), min(x), min(y)
-    # hf_x, hf_y = (max_x + min_x)/2.,(max_y + min_y)/2. 
-    # hf_span = 1.2 * max(max_x - min_x, max_y - min_y)/2.
-    # plt.xlim(int(hf_x - hf_span), int(hf_x + hf_span))
-    # plt.ylim(int(hf_y - hf_span), int(hf_y + hf_span))
     plt.axes().set_aspect('equal')
     plt.xlabel('x'); plt.ylabel('y')
     plt.grid()
+    plt.title('Location of circles')
     plt.show()
 
 def plot_pts(plist):
@@ -72,7 +73,7 @@ def plot_tan_pts(p, tplist):
         y.pop()
 
 def plot_circle(c):
-    ''' plots a circle where xy tupl is c[:2] and radius is c[2] '''
+    ''' plots a circle where xy tupl is c[:2] and radius is c[2]'''
     circle = plt.Circle(c[:2],c[2], color='b')
     fig = plt.gcf()
     fig.gca().add_artist(circle)
@@ -97,16 +98,17 @@ def dot_product(A, B):
     return AdotB
 
 def angle_btw_two_vectors(A, B):
-    ''' finds the angle (rad) between two vectors
-    A and B are tuples with (dx, dy) '''
+    ''' angle (rad) between two vectors, A & B are tuples with (dx, dy) '''
     LA, LB = sqrt(A[0]**2 + A[1]**2), sqrt(B[0]**2 + B[1]**2)
     AdotB = dot_product(A, B)
     theta = acos(AdotB / (LA * LB))
     return theta
 
 def check_intersection_with_circles(p1, p2, clist):
-    ''' checking circle-line intersection per Wolfram Mathworld methodology '''
-    
+    ''' checking circle-line intersection per Wolfram Mathworld methodology, will
+    indicate true if the circle lie on the line defined by p1 and p2, even if
+    the circle is not between p1 and p2.  See complex code for this level of
+    robustness '''
     int_list = [] # initialize with line from p1 to p2 not intersecting any circles
     for i, c in enumerate(clist):
         xc, yc, r = c[0], c[1], c[2]
@@ -123,7 +125,6 @@ def check_intersection_with_circles(p1, p2, clist):
 def find_line_circle_tangent_pts(p, c):
     ''' finding pts on circle where line intersects and is tangent per
     Wolfram Mathworld's methodology for circle tangent line intersection '''
-
     xp, yp = p[0], p[1]
     x0, y0, a = c[0] - xp, c[1] - yp, c[2]
     ss_x2y2 = x0**2 + y0**2
@@ -160,21 +161,66 @@ def determine_best_tan_pt(from_p1, to_p2, xytps):
     ind = angles.index(min(angles))
     return xytps[ind]
 
+def rotate_about_z_axis(vector, theta):
+    ''' rotates a 2d vector (as a tuple) about the z axis by angle theta
+    rotation sign convention follows right hand rule, CCW about z + '''
+    dx, dy = vector[0], vector[1]
+    dxr = dx * cos(theta) - dy * sin(theta)
+    dyr = dx * sin(theta) + dy * cos(theta)
+    return (dxr, dyr)
+
+def make_arc(p1, tp1, tp2, p2, c):
+    ''' makes an arc between tangent point 1 and tangent point 2 every degree
+    around circle c and then return the entire point list '''
+    pc = (c[0], c[1]) 
+    vtp1 = vector_from_two_pts(pc, tp1)
+    vtp2 = vector_from_two_pts(pc, tp2)
+    arc_angle = angle_btw_two_vectors(vtp1, vtp2)
+    # determine angle sign to go from tp1 to tp2
+    vtp1_r = rotate_about_z_axis(vtp1, arc_angle)
+    if abs(angle_btw_two_vectors(vtp1_r, vtp2)) <= 0.001: # vectors coincident
+        sgn = 1.0
+    else:
+        sgn = -1.0
+    delang = sgn * 0.01745 #angle increment (radians)
+    na = abs(int(floor(arc_angle / delang))) - 1 # number of angles
+    arc = []
+    for i in xrange(na):
+        theta = (i + 1) * delang
+        varc = rotate_about_z_axis(vtp1, theta)
+        pa = (pc[0] + varc[0], pc[1] + varc[1])
+        arc.append(pa)
+    return [p1, tp1] + arc + [tp2, p2]
+
 if __name__ == '__main__':
-    p1 = (50, 0)
-    p2 = (200, -150)
-    c1 = (75, -30, 15)
-    c2 = (125, -120, 30)
+    
+    # inputs
+    # point locations
+    p1 = (50, 0) # x,y point 1
+    p2 = (200, -150) # x,y point 2
+    # (x, y, radius) of circles
+    c1 = (85, -50, 35) # circle 1, 85
+    c2 = (100, -130, 20) # circle 2
+    
+    # calculations
     plist = [p1, p2]
     clist = [c1, c2]
-    plot_path(plist, clist)
+    plot_path(plist, clist) # ideal path
     int_list = check_intersection_with_circles(p1, p2, clist)
-    if len(int_list) == 1:
+    if len(int_list) == 1: # checking intersection with just one circle in this simple example
         c = clist[int_list[0]]
         xytps1 = find_line_circle_tangent_pts(p1, c)
         xytps2 = find_line_circle_tangent_pts(p2, c)
         tp1 = determine_best_tan_pt(p1, p2, xytps1)
         tp2 = determine_best_tan_pt(p2, p1, xytps2)
-        make_plots(p1, p2, c, plist, xytps1, xytps2)         
+        if tp1 != None and tp2 != None: # best tangent points successfully determined
+            plist2 = make_arc(p1, tp1, tp2, p2, c) # make full path including arc
+            make_plots(p1, p2, c, plist, xytps1, xytps2, plist2)
+        else:
+            print "There was an error finding the tangent points."
+    else:
+        print "Sorry, this code investigates intersection with exactly one circle \
+               and that's it!"
+    print "Simulation complete."
         
 
