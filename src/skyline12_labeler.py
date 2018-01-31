@@ -9,7 +9,6 @@ import numpy as np
 import scipy.io
 import skimage.io
 import matplotlib.pyplot as plt
-import time
 import cProfile
 import pstats
 import StringIO
