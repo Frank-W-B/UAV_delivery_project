@@ -13,6 +13,7 @@ import time
 import cProfile
 import pstats
 import StringIO
+import math
 
 def make_img_paths(root, folder, city_dict, imgs_per_folder, pref, ext):
     """ Returns a numpy array containing paths to all the images in the dataset """
@@ -77,20 +78,63 @@ def read_labels(label_paths, use):
     return np.array(lbls)
 
 def plot_image_and_label(imgs, lbls):
-    i = 0    
-    for img, lbl in zip(imgs, lbls):
+    """ Plots images and labels together as a visual check """ 
+    for i, (img, lbl) in enumerate(zip(imgs, lbls)):
         fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(9, 4))
         image = axes[0].imshow(img)
         mask = axes[1].imshow(lbl)
         fname = 'temp/' + str(i) + '_.png'
         plt.savefig(fname)
         plt.close()
-        i += 1
 
-    
+def partition_images(imgs, desired_image_size, num_horz, num_vert, flip=True):
+    """ Splits a larger image into num_horz * num_vert images, each of size
+        desired_image_size, which is a tuple of (pix_vert, pix_vert).  
+        If flip is true it also flips each image left-right, doubling the 
+        number of images.
+    """
+    partitioned_images = [] 
+    pix_vert = desired_image_size[0]
+    pix_horz = desired_image_size[1]
+    for img in imgs:
+        del_rows = img.shape[0] - pix_vert 
+        del_cols = img.shape[1] - pix_horz 
+        row_shift  = int(math.floor(del_rows / (num_vert - 1))) 
+        col_shift  = int(math.floor(del_cols / (num_horz - 1)))
+        for i_vert in range(num_vert):
+            rs = i_vert * row_shift
+            re = rs + pix_vert
+            for i_horz in range(num_horz):
+                cs = i_horz * col_shift
+                ce = cs + pix_horz
+                part_img = img[rs:re, cs:ce,:]
+                partitioned_images.append(part_img)
+                if flip:
+                    partitioned_images.append(np.fliplr(part_img))
+    return np.array(partitioned_images)
+            
+def save_images(imgs, path):
+    """ Saves the images to the desired path as .png files """
+    for i, img in enumerate(imgs): 
+        if i < 10:
+            fname = "000" + str(i) + ".png"
+        elif i < 100:
+            fname = "00" + str(i) + ".png"
+        elif i < 1000:
+            fname = "0" + str(i) + ".png"
+        else:
+            fname = str(i) + ".png"
+        path_with_name =  path + fname
+        skimage.io.imsave(path_with_name,img)
+
 
 if __name__ == '__main__':
-    # read in the skyline 12 dataset 
+    # inputs 
+    desired_img_size = (720, 1280)
+    min_rows_img = 800
+    min_cols_img = 1600
+    num_horz = 5 # number of slices of image to take horizontally
+    num_vert = 5 # number of slices of image to take vertically
     root = '/home/frank/Pictures/skyline12/data/'
     img_folder = 'images/'
     lbl_folder = 'labels/'
@@ -98,46 +142,17 @@ if __name__ == '__main__':
                  'HongKong': '4', 'Miami': '5', 'NewYork': '6',
                  'Philadelphia': '7', 'Seattle': '8', 'Shanghai': '9',
                  'Singapore': '10', 'Tokyo': '11', 'Toronto': '12'}
-    
+    images_out = '/home/frank/Pictures/image_segmentation/field_and_city/720p/images_city/'
+    labels_out = '/home/frank/Pictures/image_segmentation/field_and_city/720p/labels_city/' 
+
+    # calculations and saved images 
     img_paths = make_img_paths(root, img_folder, city_dict, 10,'', '.jpg')
     label_paths = make_img_paths(root, lbl_folder, city_dict, 10, 'label_', '.mat')
-    use = flag_images_to_use(img_paths, 800, 1600)
+    use = flag_images_to_use(img_paths, min_rows_img, min_cols_img)
     img_paths_to_use, imgs = read_images(img_paths, use)
     lbls = read_labels(label_paths, use)
-    plot_image_and_label(imgs, lbls)
-#img_num = 2 
-    #img_path = img_paths[img_num]
-    #label_path = label_paths[img_num]
-    #img = skimage.io.imread(img_path)
-    #lbl_mat = scipy.io.loadmat(label_path)
-    #lbl_raw = lbl_mat['labels']
-    #lbl = np.zeros((lbl_raw.shape[0], lbl_raw.shape[1], 3), dtype=np.uint8)
-    #bmask = lbl_raw == 1 
-    #gmask = ~bmask
-    #lbl[:,:,1] = gmask * 255
-    #lbl[:,:,2] = bmask * 255
-    #path_sample_lbl = '/home/frank/Pictures/skyline12/data/labels/sample_label.png'
-    #ex_lbl = skimage.io.imread(path_sample_lbl)
-    #fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(9, 4))
-    #image = axes[0].imshow(img)
-    #mask = axes[1].imshow(lbl)
-    #plt.show()
-
-
-
-#for i, img in enumerate(imgs):
-    #    print i 
-    #    plt.imshow(img)
-    #    plt.show()
-    
-    #pr.disable()
-    #print_profiler_output(pr) 
-    #imgs, rows, cols, chans, aspect = find_raw_img_dimensions(img_paths)
-    #city = 'Chicago'
-    #ci = city_index[city]
-    #img_lst = [str(val) for val in range(1,11)]
-    #img_path = "".join([root, img_folder,city,'/',ci, '_',img_lst[0],'.jpg'])
-    #print(img_path)
-    #img = skimage.io.imread(img_path)
-    #skimage.io.imshow(img)
-
+    part_imgs = partition_images(imgs, desired_img_size, num_horz, num_vert)
+    save_images(part_imgs, images_out)
+    part_lbls = partition_images(lbls, desired_img_size, num_horz, num_vert)
+    save_images(part_lbls, labels_out)
+     
