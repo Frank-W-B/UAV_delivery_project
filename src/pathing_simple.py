@@ -141,8 +141,8 @@ def find_line_circle_tangent_pts(p, c):
     for xy in xyints:
        d.append(distance2d(p, xy)) # find the lengths of the 4 lines
     tan_pts_found = False
-    for i in xrange(0, len(d)- 1):
-        for j in xrange(1, len(d)):
+    for i in range(0, len(d)- 1):
+        for j in range(1, len(d)):
             if i != j:
                 if almost_equal(d[i],d[j],1e-6):
                     tan_pts_found = True #  2 correct tan pts give equal lengths
@@ -150,7 +150,7 @@ def find_line_circle_tangent_pts(p, c):
     if tan_pts_found == True:
         return [xyints[ind1], xyints[ind2]]
     else:
-        print "No tangent points found!"
+        print("No tangent points found!")
         return None
     
 def determine_best_tan_pt(from_p1, to_p2, xytps):
@@ -185,7 +185,7 @@ def make_arc(p1, tp1, tp2, p2, c):
     delang = sgn * 0.01745 #angle increment (radians)
     na = abs(int(floor(arc_angle / delang))) - 1 # number of angles
     arc = []
-    for i in xrange(na):
+    for i in range(na):
         theta = (i + 1) * delang
         varc = rotate_about_z_axis(vtp1, theta)
         pa = (pc[0] + varc[0], pc[1] + varc[1])
@@ -200,7 +200,7 @@ if __name__ == '__main__':
     p2 = (200, -150) # x,y point 2
     # (x, y, radius) of circles
     c1 = (85, -50, 35) # circle 1, 85
-    c2 = (100, -130, 20) # circle 2
+    c2 = (75, -100, 20) # circle 2
     
     # calculations
     plist = [p1, p2]
@@ -217,10 +217,10 @@ if __name__ == '__main__':
             plist2 = make_arc(p1, tp1, tp2, p2, c) # make full path including arc
             make_plots(p1, p2, c, plist, xytps1, xytps2, plist2)
         else:
-            print "There was an error finding the tangent points."
+            print("There was an error finding the tangent points.")
     else:
-        print "Sorry, this code investigates intersection with exactly one circle \
-               and that's it!"
-    print "Simulation complete."
+        print("Sorry, this code investigates intersection with exactly one circle " 
+              "and that's it!")
+    print("Simulation complete.")
         
 
