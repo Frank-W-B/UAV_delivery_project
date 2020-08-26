@@ -2,6 +2,9 @@ from UAV_helper import circleObject, pathObject
 import matplotlib.pyplot as plt
 from math import sqrt, cos, sin, tan, acos, asin, atan2, degrees, pi
 from random import random, seed
+import os
+import warnings
+warnings.filterwarnings("ignore")
 
 def plot_pointlist(plist, desig):
     ''' plots point list (each pt is an x, y tuple) with designated format '''
@@ -20,7 +23,7 @@ def plot_circles():
     circs = []
     xmin, xmax, ymin, ymax, rmax = 1e6, -1e6, 1e6, -1e6, 0  # for graph scaling
     nc = len(circles) # number of circles
-    for i in xrange(nc):
+    for i in range(nc):
         xy, r = circles[i].xy, circles[i].r
         x, y = xy[0], xy[1]
         circs.append(plt.Circle(xy, r, color='b'))
@@ -155,19 +158,19 @@ def check_if_blocked(p1, p2, cid_p2):
         if circle.cid not in ignore_list:
             circle_on_line = check_circle_on_infinite_line(p1, p2, circle)
             if circle_on_line:
-                # print "Circle {} is on the line".format(circle.cid)
+                # print("Circle {} is on the line".format(circle.cid))
                 circle_in_front_p1 = check_circle_in_front_of_p1(p1, p2, circle)
                 if circle_in_front_p1:
-                    # print "Circle {} is in front of p1".format(circle.cid)
+                    # print("Circle {} is in front of p1".format(circle.cid))
                     circle_not_behind_p2 = check_circle_not_behind_p2(p1, p2, circle)
                     if circle_not_behind_p2:
-                        # print "Circle {} is not behind p2".format(circle.cid)
+                        # print("Circle {} is not behind p2".format(circle.cid))
                         blocking_cids.append(circle.cid)
                         blocked = True
     if blocked:
-        # print "It's blocked, and the blocking cids are {}".format(blocking_cids)
+        # print("It's blocked, and the blocking cids are {}".format(blocking_cids))
         cid_nearest = find_nearest_circle(p1, blocking_cids)
-        # print "Circle {} is the nearest".format(circles[cid_nearest].cid)
+        # print("Circle {} is the nearest".format(circles[cid_nearest].cid))
     else:
         cid_nearest = None
     return blocked, cid_nearest
@@ -312,37 +315,36 @@ def get_route(p1, p2, cid_p2, dir_cw_p2, offset):
         Offset is used to slightly offset aimpoints from circle edges if
         necessary. '''
     p1x,p1y,p2x,p2y = round(p1[0],2), round(p1[1],2), round(p2[0],2), round(p2[1],2)
-    print "Check if blocked btw {}, {} and {}, {}".format(p1x, p1y, p2x, p2y)
+    print("Check if blocked btw {}, {} and {}, {}".format(p1x, p1y, p2x, p2y))
     blocked, cid_blk = check_if_blocked(p1, p2, cid_p2)
     if not blocked:
-        print "Not blocked!"
-        print "Now on circle {}".format(cid_p2)
+        print("Not blocked!")
+        print("Now on circle {}".format(cid_p2))
         add_path_point(xy = p2, cid = cid_p2, dir_cw = dir_cw_p2)
         distance_from_end = distance(p2, pe)
         if distance_from_end < 0.01:
-            print "Made it to end!"
-            print "\n"
+            print("Made it to end!\n")
         else:
-            print "Not at end, continuing path"
+            print("Not at end, continuing path")
             get_route(p2, pe, None, None, offset)
     else:
         if circles[cid_blk].ingrp:
-            print "Blocked by group {}".format(circles[cid_blk].grp)
+            print("Blocked by group {}".format(circles[cid_blk].grp))
         else:
-            print "Blocked by circle {}".format(cid_blk)
+            print("Blocked by circle {}".format(cid_blk))
         if path[-1].ongrp != True: # not coming from a group
             if circles[cid_blk].ingrp == True: # a group blocks the path
                 # can go around the group on either side
                 pa, dir_cw, cid_blk = aimpoint_on_group_cw_or_ccw(p1, p2, \
                                       cid_blk, offset)
                 pax, pay = round(pa[0], 2), round(pa[1],2)
-                print "New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk)
+                print("New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk))
                 get_route(p1, pa, cid_blk, dir_cw, offset)
             else:
                 # can go around the circle on either side
                 pa, dir_cw = aimpoint_on_circle_cw_or_ccw(p1, p2, cid_blk, offset)
                 pax, pay = round(pa[0], 2), round(pa[1],2)
-                print "New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk)
+                print("New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk))
                 get_route(p1, pa, cid_blk, dir_cw, offset)
         else: # was coming from a group
             if circles[cid_blk].ingrp: # if the blocking circle is part of a group
@@ -352,14 +354,14 @@ def get_route(p1, p2, cid_p2, dir_cw_p2, offset):
                     pa, dir_cw, cid_blk = aimpoint_on_group_cw_or_ccw(p1, p2, \
                                           cid_blk, offset) # both directions ok
                     pax, pay = round(pa[0], 2), round(pa[1],2)
-                    print "New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk)
+                    print("New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk))
                     get_route(p1, pa, cid_blk, dir_cw, offset)
                 else: # continue navigating around same group, direction limited
                     if path[-1].dir_cw == True:
                         direc = "CCW"
                     else:
                         direc = "CW"
-                    print "Navigating {} around group {}".format(direc, group_current)
+                    print("Navigating {} around group {}".format(direc, group_current))
                     if path[-1].dir_cw == True:
                         pa, dir_cw, cid_blk = aimpoint_on_group_cw(p1, p2, \
                                               cid_blk, offset)
@@ -367,20 +369,20 @@ def get_route(p1, p2, cid_p2, dir_cw_p2, offset):
                         pa, dir_cw, cid_blk = aimpoint_on_group_ccw(p1, p2, \
                                               cid_blk, offset)
                     pax, pay = round(pa[0], 2), round(pa[1],2)
-                    print "New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk)
+                    print("New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk))
                     get_route(p1, pa, cid_blk, dir_cw, offset)
             else:
                 # blocking circle is not part of a group
                 pa, dir_cw = aimpoint_on_circle_cw_or_ccw(p1, p2, cid_blk, offset)
                 pax, pay = round(pa[0], 2), round(pa[1],2)
-                print "New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk)
+                print("New aimpoint: {}, {} on circle {}".format(pax, pay, cid_blk))
                 get_route(p1, pa, cid_blk, dir_cw, offset)
 
 def find_route_length(point_list):
     ''' finds length of the route '''
     num_pts = len(point_list)
     route_length = 0
-    for i in xrange(num_pts-1):
+    for i in range(num_pts-1):
         route_length += distance(point_list[i], point_list[i+1])
     return route_length
 
@@ -408,9 +410,9 @@ def get_path_points(list_path_objects):
 def determine_touching_circles(circles):
     ''' determines which circles are touching and populates their object'''
     nc = len(circles) # number of circles
-    for i in xrange(nc):
+    for i in range(nc):
         xy_i, r_i  = circles[i].xy, circles[i].r
-        for j in xrange(nc):
+        for j in range(nc):
             if j != i:
                 xy_j, r_j  = circles[j].xy, circles[j].r
                 if distance(xy_i, xy_j) <= (r_i + r_j):
@@ -430,7 +432,7 @@ def make_circle_groups(circles):
     circles_in_groups = []
     groups = []
     nc = len(circles)
-    for i in xrange(nc):
+    for i in range(nc):
         group = []
         if circles[i].tch and i not in circles_in_groups:
             group.append(i)
@@ -462,7 +464,7 @@ def route_start_and_end_random(fc, fl, fract_fl, circ_max_rad):
         pt_s = (r * cos(angle_start) + fc[0], r * sin(angle_start) + fc[1])
         pt_e = (r * cos(angle_end) + fc[0], r * sin(angle_end) + fc[1])
         one_too_close = False
-        for i in xrange(len(circles)):
+        for i in range(len(circles)):
             xy_i = circles[i].xy
             if distance(pt_s, xy_i) <= circ_max_rad:
                 one_too_close = True
@@ -481,7 +483,7 @@ def make_field_of_circles_random(num_circ, rad_mnmx, fc, fl, set_seed, r_seed):
     if set_seed:
         seed(r_seed)
     rad_min, rad_rng = rad_mnmx[0], rad_mnmx[1] - rad_mnmx[0]
-    for i in xrange(num_circ):
+    for i in range(num_circ):
         x = round((random() - 0.5) * fl, 2) + fc[0]
         y = round((random() - 0.5) * fl, 2) + fc[1]
         r = round(rad_min + random() * rad_rng, 2)
@@ -527,9 +529,10 @@ if __name__ == '__main__':
     # circles = make_field_of_circles_manually() # define in method above for now
     # ps, pe = ( 750, 750), (-750, -750)  # start point and end point
     # random assignment
-    input = raw_input('Go? (y or n): ')
-    while input == 'y':
-        nc = 100 # number of circles
+    os.system('clear') 
+    inp = input('Go? (y or n): ')
+    while inp == 'y':
+        nc = 50 # number of circles
         rad_mnmx = (15, 150) #radius minimum, maximum
         fc = (0, 0) # field center
         fl = 2000 # field length
@@ -541,18 +544,17 @@ if __name__ == '__main__':
         # used whether manual or random
         offset = 1 # slightly offset aimpoint locations from edge of circles
 
-
         # calculations
         path = [] # initialize
         add_path_point(xy = ps, cid = None, dir_cw = None) # add start
         # forward
-        print "Starting path forward"
+        print("Starting path forward")
         get_route(p1 = ps, p2 = pe, cid_p2 = None, dir_cw_p2 = None, offset = offset)
         path_forward = path # ran from start to end
         path_forward_points_list = get_path_points(path_forward) # points
         dist_for = find_route_length(path_forward_points_list)
         # backward
-        print "Starting path backward"
+        print("Starting path backward")
         ps, pe = pe, ps # reversed
         path = []
         add_path_point(xy = ps, cid = None, dir_cw = None) # start with end
@@ -560,14 +562,14 @@ if __name__ == '__main__':
         path_backward = path # ran from start to end
         path_backward_points_list = get_path_points(path_backward) # points
         dist_back = find_route_length(path_backward_points_list)
-        print "Comparison of distances:"
-        print "Forward: {}, backward {}".format(round(dist_for, 2), round(dist_back,2))
+        print("Comparison of distances:")
+        print("Forward: {}, backward {}".format(round(dist_for, 2), round(dist_back,2)))
         if dist_for <= dist_back:
-            print "Forward the shortest"
+            print("Forward the shortest")
             path_points = path_forward_points_list
             ps, pe = pe, ps
         else:
-            print "Backward the shortest"
+            print("Backward the shortest")
             path_points = path_backward_points_list
 
         # plotting
@@ -576,5 +578,6 @@ if __name__ == '__main__':
         plot_pointlist([ps, pe], 'r--') # perfect route
         plot_path(path_points, 'g+-') # actual route
         plot_circles()
-        print "\n"
-        input = raw_input('Go? (y or n): ')
+        print("\n")
+        os.system('clear') 
+        inp = input('Go? (y or n): ')
