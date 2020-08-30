@@ -24,52 +24,67 @@ The following data (with link to source) were required for the simulation:
 * Delivery addresses ([Denver Open Data Catalog](https://www.denvergov.org/opendata))
 * School addresses ([Google Maps API](https://developers.google.com/maps/documentation))
 * Hospital, law enforcement, and government building addresses ([Google Maps API](https://developers.google.com/maps/documentation))
-* Large sports facility and convention center addresses ([Google Maps API](https://developers.google.com/maps/documentation))
+* Sports facility and convention center addresses ([Google Maps API](https://developers.google.com/maps/documentation))
 * Denver skyscrapers ([scraped from Wikipedia](https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Denver))  
 
 Addresses were managed as (latitude, longitude) tuples.
 
 Two dataframes were created: one for delivery addresses and the other for no-fly 
-zones. As drones should not fly higher than 500', many skyscrapers obstruct the flight path and also count as no-fly zones.  Radii for the no-fly zones were based on the 
-[FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/)  Delivery addresses in no-fly zones were removed as potential delivery addresses in the simulation.
+zones. As drones should not fly higher than 500' per the FAA, many skyscrapers obstruct the flight path and therefore count as no-fly zones for this analysis.  Radii for the no-fly zones were based on the 
+[FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/)  Delivery addresses in no-fly zones were removed for the simulation.
 
 ## Pathing  
-Drone package deliveries were assumed to originate from the UPS Freight facility 
+UAV (drone) package deliveries were assumed to originate from the UPS Freight facility 
 north of 270, just north of downtown.  Eligible delivery addresses were contained 
 in the rectangle formed by I70 to the north, Sheridan Boulevard to the west, 
 Alameda Avenue to the south, and Monaco Parkway to the east.  
 
 In the abscence of no-fly zones and skyscrapers, the delivery flight path would be
-easy to calculate and straight "as-the-crow-flies."  However, circular no-fly zones may
+easy to calculate and straight "as-the-crow-flies."  However, no-fly zones may
 obstruct the path and require the drone to fly around them.  Therefore a pathing algorithm
 was created to find the shortest path between two points assuming circular obstructions
-may be present.
+may be present.  It's assumed that no-fly zones can be specified as a circle: (latitude, longitude) for the center and a given radius.
 
-A recursive approach was taken.  Pseudocode is shown below:  
+A recursive approach was taken to perform the pathing, as shown in this pseudocode:  
 ```
 get_route(start, end, obstructions)
     if there are no obstructions between the start and end points
         travel a straight path from start to end
     else
-        go around the nearest obstruction
+        go around to the edge of the nearest obstruction
         define a new start point
         get_route(start, end, obstructions)
 ```
 
-This algorithm was implemented in `src/pathing_demo.py`.  In this file, the locations of the
-no-fly zones are randomized and the most direct route between the start and end point is calculated
-and plotted.  You may execute this code from the command line:  
+This algorithm was implemented in `src/pathing_demo.py`.  This file randomly 
+locates a start point, an end point, and circular no-fly zones, then attempts 
+to navigate from the start to the end and plot the resulting path.
+
+You may execute this code from the command line:  
 ```
 $ python pathing_demo.py
 ```
-Four example simulations are shown in the figure below.
+to perform your own simulations.  Examples of four simulations are shown below.
 
 <img src="./imgs/pathing_demo_results.png" width="600"/>
 
 The dashed green path shows the straight path between the two points, while the blue
 line plots the approximate path using points on the circle quadrants. Exact tangents
-are found later using a smoothing process.
+are found later using a smoothing process.  
 
+## Simulation
+The gif below shows an aerial view of a UAV package delivery on Google Maps from 
+the UPS Freight facility north of 270 to an address at 13th and Kalamath, just southwest
+of downtown.  The UAV must navigate the numerous no-fly zones downtown to deliver the package.
+The green line indicates the straight path and the blue line the path necessary
+to navigate the no-fly zones. The icon in the middle indicates the UAV.
+
+![](imgs/delivery_animation.gif)
+
+
+of the 
+UAV (drone) package deliveries were assumed to originate from the UPS Freight facility 
+north of 270, just north of downtown.  Eligible delivery addresses were contained 
 
 Data were brought together into a pandas dataframes for delivery address
 answers these questions by creating
