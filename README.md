@@ -66,7 +66,7 @@ $ python pathing_demo.py
 ```
 to perform your own simulations.  Examples of four simulations are shown below.
 
-<img src="./imgs/pathing_demo_results.png" width="600"/>
+<img src="./imgs/pathing_demo_results.png" width="800"/>
 
 The dashed green path shows the straight path between the two points, while the blue
 line plots the approximate path using points on the circle quadrants. Exact tangents
@@ -80,6 +80,11 @@ The green line indicates the straight path and the blue line the path necessary
 to navigate the no-fly zones. The icon in the middle indicates the UAV.
 
 ![](imgs/delivery_animation.gif)
+
+
+The entire delivery path along with no-fly zones is plotted below.
+
+<img src="./imgs/route_visualized_0.png" width="800"/>
 
 
 of the 
