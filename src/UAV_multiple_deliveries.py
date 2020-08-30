@@ -1,10 +1,14 @@
+# Code is Python 2
+
 from UAV_helper import circleObject, pathObject
 import matplotlib.pyplot as plt
 from math import sqrt, cos, sin, tan, acos, asin, atan2, degrees, pi
 from random import random, seed, sample
 import numpy as np
 import pandas as pd
+import sys
 import csv
+
 
 def plot_pointlist(plist, desig):
     ''' plots point list (each pt is an x, y tuple) with designated format '''
