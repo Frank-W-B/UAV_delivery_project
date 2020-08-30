@@ -202,11 +202,11 @@ if __name__ == '__main__':
     p2 = (200, -150) # x,y point 2
     # (x, y, radius) of circles
     c1 = (85, -50, 35) # circle 1, 85
-    c2 = (75, -100, 20) # circle 2
+    #c2 = (75, -100, 20) # circle 2
     
     # calculations
     plist = [p1, p2]
-    clist = [c1, c2]
+    clist = [c1]
     plot_path(plist, clist) # ideal path
     int_list = check_intersection_with_circles(p1, p2, clist)
     if len(int_list) == 1: # checking intersection with just one circle in this simple example
