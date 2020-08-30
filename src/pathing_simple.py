@@ -5,7 +5,9 @@ around it with the shortest path.  Finds the shortest path.
 
 import matplotlib.pyplot as plt
 from math import sqrt, cos, sin, acos, asin, floor
-
+import warnings
+warnings.filterwarnings("ignore")
+ 
 def make_plots(p1, p2, c, plist, xytps1, xytps2, plist2):
     ''' make plots in case there was an intersection '''
     plot_pts(plist)
