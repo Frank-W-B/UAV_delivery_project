@@ -27,6 +27,8 @@ The following data (with link to source) were required for the simulation:
 * Large sports facility and convention center addresses ([Google Maps API](https://developers.google.com/maps/documentation))
 * Denver skyscrapers ([scraped from Wikipedia](https://en.wikipedia.org/wiki/List_of_tallest_buildings_in_Denver))  
 
+Addresses were managed as (latitude, longitude) tuples.
+
 Two dataframes were created: one for delivery addresses and the other for no-fly 
 zones. As drones should not fly higher than 500', many skyscrapers obstruct the flight path and also count as no-fly zones.  Radii for the no-fly zones were based on the 
 [FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/)  Delivery addresses in no-fly zones were removed as potential delivery addresses in the simulation.
