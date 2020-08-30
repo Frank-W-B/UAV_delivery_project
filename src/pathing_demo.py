@@ -26,7 +26,7 @@ def plot_circles():
     for i in range(nc):
         xy, r = circles[i].xy, circles[i].r
         x, y = xy[0], xy[1]
-        circs.append(plt.Circle(xy, r, color='b'))
+        circs.append(plt.Circle(xy, r, color='r'))
         if x > xmax: xmax = x
         if x < xmin: xmin = x
         if y > ymax: ymax = y
@@ -574,9 +574,9 @@ if __name__ == '__main__':
 
         # plotting
         plot_pointlist([ps],'ko') # start point
-        plot_pointlist([pe],'ro') # end point
-        plot_pointlist([ps, pe], 'r--') # perfect route
-        plot_path(path_points, 'g+-') # actual route
+        plot_pointlist([pe],'ko') # end point
+        plot_pointlist([ps, pe], 'g--') # perfect route
+        plot_path(path_points, 'b+-') # actual route
         plot_circles()
         print("\n")
         os.system('clear') 
