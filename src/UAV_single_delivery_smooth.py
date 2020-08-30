@@ -342,7 +342,7 @@ def get_route(p1, p2, cid_p2, dir_cw_p2, offset):
             add_path_point(xy = p2, cid = cid_p2, dir_cw = dir_cw_p2)
             distance_from_end = distance(p2, pe)
             if distance_from_end < 1e-6:
-                print "Made it to end!\n"
+                print("Made it to end!\n")
             else:
                 get_route(p2, pe, None, None, offset)
         else:
@@ -607,27 +607,27 @@ if __name__ == '__main__':
     # route
     offset = 0.00004 # slightly offset (~10 ft) from edge of circles
     
-    print "Starting path forward"
+    print("Starting path forward")
     path = [] # initialize
     add_path_point(xy = ps, cid = None, dir_cw = None) # add start
     found_path_forward = False
     rc = 0 # initialize recursive counter
     get_route(p1 = ps, p2 = pe, cid_p2 = None, dir_cw_p2 = None, offset = offset)
-    print "There were {} calls going forward".format(rc) 
+    print("There were {} calls going forward".format(rc))
     if rc < 100:
         found_path_forward = True
         path_forward = path # ran from start to end
         path_forward_points_list = get_path_points(path_forward) # points
         dist_for = find_route_length(path_forward_points_list)
     # backward
-    print "Starting path backward"
+    print("Starting path backward")
     ps, pe = pe, ps # reversed
     path = []
     add_path_point(xy = ps, cid = None, dir_cw = None) # start with end
     found_path_backward = False
     rc = 0
     get_route(p1 = ps, p2 = pe, cid_p2 = None, dir_cw_p2 = None, offset = offset)
-    print "There were {} calls going backward".format(rc)
+    print("There were {} calls going backward".format(rc))
     if rc < 100:
         found_path_backward = True
         path_backward = path # ran from start to end
@@ -637,39 +637,39 @@ if __name__ == '__main__':
         #print "Comparison of distances:"
         #print "Forward: {}, backward {}".format(round(dist_for, 2), round(dist_back,2))
         if dist_for <= dist_back:
-            print "Forward the shortest"
+            print("Forward the shortest")
             ps, pe = pe, ps
             path_points = path_forward_points_list
             path = path_forward
             rt_dist = find_route_length(path_forward_points_list)
         else:
-            print "Backward the shortest"
+            print("Backward the shortest")
             path_points = path_backward_points_list
             path = path_backward
             rt_dist = find_route_length(path_backward_points_list)
     elif found_path_forward:
-        print "Only found forward"
+        print("Only found forward")
         path_points = path_forward_points_list
         ps, pe = pe, ps
         path = path_forward
         rt_dist = find_route_length(path_forward_points_list)
     elif found_path_backward:
-        print "Only found backward"
+        print("Only found backward")
         path_points = path_backward_points_list
         path = path_backward
         rt_dist = find_route_length(path_backward_points_list)
     else:
-        print "No solutions, please pick another address"
+        print("No solutions, please pick another address")
     
     if found_path_forward or found_path_backward:
         rt_dist_st = find_route_length([ps, pe])
         rt_dist_inc = rt_dist - rt_dist_st
         rt_dist_inc_pc = (rt_dist - rt_dist_st) / rt_dist_st * 100
-        print "The straight distance was {} miles.".format(round(rt_dist_st, 2))
-        print "The actual route was {} miles.".format(round(rt_dist, 2))
-        print "No fly zones caused an increased flight length of {} miles.".format( \
-              round(rt_dist_inc, 2))
-        print "This is an increase of {} percent.".format(round(rt_dist_inc_pc,2))
+        print("The straight distance was {} miles.".format(round(rt_dist_st, 2)))
+        print("The actual route was {} miles.".format(round(rt_dist, 2)))
+        print("No fly zones caused an increased flight length of {} miles.".format( \
+              round(rt_dist_inc, 2)))
+        print("This is an increase of {} percent.".format(round(rt_dist_inc_pc,2)))
         
         # final smoothed path
         # find the correct tan pts
