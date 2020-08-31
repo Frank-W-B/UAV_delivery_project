@@ -31,7 +31,7 @@ Addresses were managed as (latitude, longitude) tuples.
 
 Two dataframes were created: one for delivery addresses and the other for no-fly 
 zones. As UAVs (a.k.a. drones) should not fly higher than 500' per the FAA, many skyscrapers obstruct the flight path and therefore count as no-fly zones for this analysis.  Radii for the no-fly zones were based on the 
-[FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/) Areas qualifying as no-fly zones and their assumed no-fly radius were estimated conservatively.
+[FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/) Areas qualifying as no-fly zones and their assumed no-fly radii were estimated conservatively.
 
 ## Pathing  
 UAV (drone) package deliveries were assumed to originate from the UPS Freight facility 
