@@ -16,8 +16,8 @@ and UAV requirements be affected by these decisions?
 ## Goal
 This project develops a UAV delivery model to answer the following questions 
 for Metro Denver:
-* How many delivery addresses are affected by no-fly zones?
-* What is the average UAV package delivery distance, and how is it affected by no-fly zones?
+* How many delivery addresses will likely be affected by no-fly zones?
+* What would the average UAV package delivery distance be, and how might it be affected by no-fly zones?
 
 ## Data  
 The following data (with link to source) were required for the simulation:  
@@ -30,8 +30,8 @@ The following data (with link to source) were required for the simulation:
 Addresses were managed as (latitude, longitude) tuples.
 
 Two dataframes were created: one for delivery addresses and the other for no-fly 
-zones. As drones should not fly higher than 500' per the FAA, many skyscrapers obstruct the flight path and therefore count as no-fly zones for this analysis.  Radii for the no-fly zones were based on the 
-[FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/)  
+zones. As UAVs (a.k.a. drones) should not fly higher than 500' per the FAA, many skyscrapers obstruct the flight path and therefore count as no-fly zones for this analysis.  Radii for the no-fly zones were based on the 
+[FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/) Areas qualifying as no-fly zones and their assumed no-fly radius were estimated conservatively.
 
 ## Pathing  
 UAV (drone) package deliveries were assumed to originate from the UPS Freight facility 
@@ -43,7 +43,7 @@ In the abscence of no-fly zones and skyscrapers, the delivery flight path would 
 easy to calculate and straight "as-the-crow-flies."  However, no-fly zones may
 obstruct the path and require the drone to fly around them.  Therefore a pathing algorithm
 was created to find the shortest path between two points assuming circular obstructions
-may be present.  It's assumed that no-fly zones can be specified as a circle: (latitude, longitude) for the center and a given radius.
+may be present.  It's assumed that no-fly zones can be specified as a circle: (latitude, longitude) of the center with a given no-fly radius.
 
 A recursive approach was taken to perform the pathing, as shown in this pseudocode:  
 ```
@@ -94,7 +94,7 @@ outside the no-fly zones.
 <br>
 The average number of daily small package deliveries to the Denver metropolitan area of this
 study was estimated using Denver's metropolitan population and [package delivery 
-information from the USPS](https://facts.usps.com/table-facts/). The results: 
+information from the USPS](https://facts.usps.com/table-facts/). The result: 
 approximately 3500 small packages per day.  For each package a delivery address 
 was chosen randomly, then routes were calculated and plotted below.
 <img src="./imgs/day_of_deliveries.png" width="900"/>
@@ -110,35 +110,13 @@ shortest distance will likely be required to control UAV traffic in some areas.
 <br>
 <br>
 ## Conclusions
-This study started with two goals.
+This study started with two motivating questions:
+1. How many delivery addresses will likely be affected by no-fly zones?
+2. What would the average UAV package delivery distance be, and how might it be affected by no-fly zones?
 
-
-
-* How many delivery addresses are affected by no-fly zones?
-* What is the average UAV package delivery distance, and how is it affected by no-fly zones?
-
-
-and estimating that 1/100th the small packages will be serviced by UAVs leads to approximately
-
-UAV (drone) package deliveries were assumed to originate from the UPS Freight facility 
-north of 270, just north of downtown.  Eligible delivery addresses were contained 
-
-Data were brought together into a pandas dataframes for delivery address
-answers these questions by creating
-package delivery models for Denver County. "As the crow flies" routes are compared
-to more constrained routes that include no-fly zones for many locations.
-Routing problems solved via graph theory using data aggregated from the US. Census,
-the DenverOpenData catalog, and Google Maps via the JavaScript API. Results are 
-visualized on Google Maps and in matplotlib.
-
-The second part of the project addresses the final step of delivery: package
-drop-off at the customer's home. In Amazon's conception of this step, the
-customer places a 1'x1' sign with the Amazon logo flat on the ground near their
-home where they want the UAV to land. As the UAV nears the home it switches
-from GPS navigation to an on-board camera that looks for the sign and positions
-itself over it to land. This is too restrictive. It should be possible to classify
-potential landing zones around a home using high resolution satellite images.
-These landing zones could serve as default landing locations that would not require
-the customer's presence for deliveries. This portion of the project demonstrates
-proof-of-concept for one city block.  Analysis consisted of training and
-testing a random forest classifier on aerial images.
+Simulations showed that:
+1. even with conservative assumptions regarding what was a no-fly zone and the sizes of the
+no-fly zone radii, 90% of addresses in Metro Denver were outside of no-fly zones.
+2. average 1-way package delivery distance to addresses in the rectangle bounded by 
+I70, Sheridan, Alameda, and Monaco Parkway from the UPS Freight location was 5 miles, and 
+the added distance required to fly around the no-fly zones was negligible.
