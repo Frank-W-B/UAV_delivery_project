@@ -31,7 +31,7 @@ Addresses were managed as (latitude, longitude) tuples.
 
 Two dataframes were created: one for delivery addresses and the other for no-fly 
 zones. As drones should not fly higher than 500' per the FAA, many skyscrapers obstruct the flight path and therefore count as no-fly zones for this analysis.  Radii for the no-fly zones were based on the 
-[FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/)  Delivery addresses in no-fly zones were removed for the simulation.
+[FAA's "No Drone Zone" documentation.](https://www.faa.gov/uas/resources/community_engagement/no_drone_zone/)  
 
 ## Pathing  
 UAV (drone) package deliveries were assumed to originate from the UPS Freight facility 
@@ -66,7 +66,7 @@ $ python pathing_demo.py
 ```
 to perform your own simulations.  Examples of four simulations are shown below.
 
-<img src="./imgs/pathing_demo_results.png" width="800"/>
+<img src="./imgs/pathing_demo_results.png" width="900"/>
 
 The dashed green path shows the straight path between the two points, while the blue
 line plots the approximate path using points on the circle quadrants. Exact tangents
@@ -78,16 +78,48 @@ the UPS Freight facility north of 270 to an address at 13th and Kalamath, just s
 of downtown.  The UAV must navigate the numerous no-fly zones downtown to deliver the package.
 The green line indicates the straight path and the blue line the path necessary
 to navigate the no-fly zones. The icon in the middle indicates the UAV.
-
 ![](imgs/delivery_animation.gif)
-
-
+<br>
+<br>
 The entire delivery path along with no-fly zones is plotted below.
+<img src="./imgs/route_visualized_0.png" width="900"/>
+<br>
+<br>
+Here is the delivery path along with possible delivery addresses.  From address
+locations, it's easy to discern Denver landmarks like Sloan's Lake, the Platte River, 
+City Park and Cherry Creek in this image.  90% of potential delivery addresses lie 
+outside the no-fly zones.
+<img src="./imgs/route_with_addresses.png" width="900"/>
+<br>
+<br>
+The average number of daily small package deliveries to the Denver metropolitan area of this
+study was estimated using Denver's metropolitan population and [package delivery 
+information from the USPS](https://facts.usps.com/table-facts/). The results: 
+approximately 3500 small packages per day.  For each package a delivery address 
+was chosen randomly, then routes were calculated and plotted below.
+<img src="./imgs/day_of_deliveries.png" width="900"/>
+The average straight path delivery was just over 5 miles, and the actual distance the UAV would
+have to fly was negligibly longer.  The simulation was repeated numerous times and these results
+were consistent.
 
-<img src="./imgs/route_visualized_0.png" width="800"/>
+Beside calculating delivery distances, the figure also shows UAV "highways" that form
+based on delivery addresses and "funnels" created by no-fly zones.  A homeowner may believe
+that, because their home is near a no-fly zone, that there will not be significant UAV traffic.
+If their home is near one of the funnels, the exact opposite will be true.  Planning beyond
+shortest distance will likely be required to control UAV traffic in some areas.
+<br>
+<br>
+## Conclusions
+This study started with two goals.
 
 
-of the 
+
+* How many delivery addresses are affected by no-fly zones?
+* What is the average UAV package delivery distance, and how is it affected by no-fly zones?
+
+
+and estimating that 1/100th the small packages will be serviced by UAVs leads to approximately
+
 UAV (drone) package deliveries were assumed to originate from the UPS Freight facility 
 north of 270, just north of downtown.  Eligible delivery addresses were contained 
 
